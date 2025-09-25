@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, Pressable } from 'react-native';
+import { Link } from 'expo-router';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -7,6 +8,12 @@ export default function LoginScreen() {
 
     return (
         <View style={styles.container}>
+
+            <View style={styles.viewLinha}>
+                <View style={styles.linha}></View>
+                <View style={styles.linha}></View>
+            </View>
+
             <View style={styles.images}>
                 <Image source={require('../assets/images/logoNome.png')} />
                 <Image source={require('../assets/images/slogan.png')} />
@@ -37,9 +44,28 @@ export default function LoginScreen() {
                     />
                 </View>
 
-                <Pressable style={styles.button} onPress={() => alert('Botão de login pressionado!')}> 
-                    <Text style={styles.buttonText}>Entrar</Text>
+                <Pressable style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} onPress={() => alert('Botão de login pressionado!')}>
+                    {({ pressed }) => (
+                        <Text style={[styles.buttonText, pressed && styles.buttonTextPressed]}>
+                            Entrar
+                        </Text>
+                    )}
                 </Pressable>
+
+                <Link href="/cadastro" style={styles.cadastroContainer}>
+                    <Text style={styles.textCadastro}>
+                        Não possui uma conta?{' '}
+                        <Text style={styles.linkCadastro}>
+                            Cadastre-se Aqui!
+                        </Text>
+                    </Text>
+                </Link>
+
+                <View style={styles.viewLinha}>
+                    <View style={styles.linha}></View>
+                    <View style={styles.linha}></View>
+                </View>
+
             </View>
         </View>
     );
@@ -61,6 +87,7 @@ const styles = StyleSheet.create({
     images: {
         alignItems: 'center',
         gap: 20,
+        marginTop: 30
     },
     input: {
         height: 50,
@@ -82,12 +109,44 @@ const styles = StyleSheet.create({
         backgroundColor: "#0C1D2C",
         borderWidth: 1,
         borderColor: '#EFB322',
-        padding: 6,
+        padding: 8,
         width: '80%',
         alignSelf: 'center'
     },
     buttonText: {
         color: '#fff',
         fontSize: 20
+    },
+    buttonPressed: {
+        backgroundColor: '#EFB322',
+    },
+    buttonTextPressed: {
+        color: '#0C1D2C',
+    },
+    viewLinha: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 30,
+        width: '100%',
+        alignSelf: 'center',
+    },
+    linha: {
+        height: 1,
+        width: '56%',
+        backgroundColor: '#fff',
+    },
+    cadastroContainer: {
+        marginTop: 20,
+        marginBottom: 30,
+        textAlign: 'center',
+    },
+    textCadastro: {
+        color: '#fff',
+        fontSize: 14,
+    },
+    linkCadastro: {
+        color: '#EFB322',
+        fontWeight: 'bold',
     }
 });
