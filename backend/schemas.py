@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr 
 from datetime import date
 
 # Schemas - Gerador 
@@ -39,13 +39,14 @@ class Evento(EventoBase):
 # Schemas - User 
 class UserBase(BaseModel):
     nome: str
+    email: EmailStr
     foto: str | None = None
 
 class UserCreate(UserBase):
-    pass
+    password: str 
 
 class User(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
