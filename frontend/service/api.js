@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { Platform } from 'react-native'; 
 
-const ipLocal = 'SEU_IP_LOCAL_AQUI'; 
+const ipLocal = '192.168.0.47'; 
 
 const baseURL = Platform.OS === 'web' ? 'http://127.0.0.1:8000' : `http://${ipLocal}:8000`; 
 
