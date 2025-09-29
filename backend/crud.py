@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 import models, schemas
-from security import get_password_hash 
+from security import get_password_hash, verify_password 
 
 # CRUD - User 
 def get_user(db: Session, user_id: int):
@@ -11,12 +11,10 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user(db: Session, user: schemas.UserCreate):
     hashed_password = get_password_hash(user.password)
-
     db_user = models.User(
         nome=user.nome,
         email=user.email,
         hashed_password=hashed_password,
-        foto=user.foto
     )
     db.add(db_user)
     db.commit()
@@ -47,3 +45,11 @@ def create_evento(db: Session, evento: schemas.EventoCreate):
     db.commit()
     db.refresh(db_evento)
     return db_evento
+
+def authenticate_user(db: Session, email: str, password: str):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user

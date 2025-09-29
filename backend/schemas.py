@@ -40,7 +40,6 @@ class Evento(EventoBase):
 class UserBase(BaseModel):
     nome: str
     email: EmailStr
-    foto: str | None = None
 
 class UserCreate(UserBase):
     password: str 
@@ -50,3 +49,11 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    email: str | None = None

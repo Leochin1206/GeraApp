@@ -9,7 +9,6 @@ class User(Base):
     nome = Column(String, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    foto = Column(Text, nullable=True)
 
 class Gerador(Base):
     __tablename__ = "gerador"
