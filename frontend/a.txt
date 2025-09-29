@@ -4,7 +4,3 @@ npx expo start
 
 
 
-                <View style={styles.viewLinha}>
-                    <View style={styles.linha}></View>
-                    <View style={styles.linha}></View>
-                </View>

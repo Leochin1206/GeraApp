@@ -1,43 +1,43 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, Pressable, Alert } from 'react-native'
+import { View, Text, StyleSheet, Image, TextInput, Pressable, Alert, Platform } from 'react-native'
 import { Link, useRouter } from 'expo-router'
-import api, { AxiosError } from '../service/api' 
-import * as SecureStore from 'expo-secure-store' 
+import api, { AxiosError } from '../service/api'
+import * as SecureStore from 'expo-secure-store'
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const router = useRouter()
 
-  // 👇 2. Crie a função para lidar com o login
+
   const handleLogin = async () => {
-    // Validação básica
     if (!email || !senha) {
       Alert.alert('Erro', 'Por favor, preencha e-mail e senha.')
       return
     }
 
-    // O backend espera dados de formulário para o login
     const formData = new URLSearchParams()
-    formData.append('username', email) // O backend espera 'username', não 'email'
+    formData.append('username', email)
     formData.append('password', senha)
 
     try {
-      // Faz a requisição POST para o endpoint /login
-      const response = await api.post('/login', formData)
+      const response = await api.post('/login', formData);
+      const { access_token } = response.data;
 
-      // Pega o token da resposta
-      const { access_token } = response.data
+      if (Platform.OS === 'web') {
+        localStorage.setItem('userToken', access_token);
+      } else {
+        await SecureStore.setItemAsync('userToken', access_token);
+      }
 
-      // 3. Salva o token de forma segura no dispositivo
-      await SecureStore.setItemAsync('userToken', access_token)
-
-      // Feedback de sucesso e navegação
-      Alert.alert('Sucesso!', 'Login realizado com sucesso.', [
-        { text: 'OK', onPress: () => router.push('/home') }, // Navega para a home
-      ])
+      if (Platform.OS === 'web') {
+        router.replace('/home');
+      } else {
+        Alert.alert('Sucesso!', 'Login realizado com sucesso.', [
+          { text: 'OK', onPress: () => router.replace('/home') },
+        ]);
+      }
     } catch (error) {
-      // Tratamento de erros
       if (error instanceof AxiosError && error.response) {
         console.error(
           'Erro do Backend:',
@@ -53,7 +53,12 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      {/* ... (seu JSX para imagens e linhas) ... */}
+
+      <View style={styles.viewLinha}>
+        <View style={styles.linha}></View>
+        <View style={styles.linha}></View>
+      </View>
+
       <View style={styles.images}>
         <Image source={require('../assets/images/logoNome.png')} />
         <Image source={require('../assets/images/slogan.png')} />
@@ -83,7 +88,6 @@ export default function LoginScreen() {
           />
         </View>
 
-        {/* 👇 4. Conecte o onPress à nova função handleLogin */}
         <Pressable
           style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
           onPress={handleLogin}
@@ -104,23 +108,28 @@ export default function LoginScreen() {
           </Text>
         </Link>
       </View>
+
+      <View style={styles.viewLinha}>
+        <View style={styles.linha}></View>
+        <View style={styles.linha}></View>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 30, backgroundColor: '#0C1D2C', padding: 20 },
-    form: { width: '90%', gap: 20 },
-    images: { alignItems: 'center', gap: 20, marginTop: 30 },
-    input: { height: 50, width: '100%', borderColor: '#ccc', borderWidth: 0,paddingHorizontal: 15, backgroundColor: '#fff', fontSize: 16 },
-    label: { fontSize: 18, color: '#FFF', marginBottom: 8 },
-    button: { alignItems: 'center', justifyContent: 'center', backgroundColor: "#0C1D2C", borderWidth: 1, borderColor: '#EFB322', padding: 8, width: '80%', alignSelf: 'center' },
-    buttonText: { color: '#fff', fontSize: 20 },
-    buttonPressed: { backgroundColor: '#EFB322' },
-    buttonTextPressed: { color: '#0C1D2C' },
-    viewLinha: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 30, width: '100%', alignSelf: 'center' },
-    linha: { height: 1, width: '56%', backgroundColor: '#fff' },
-    cadastroContainer: { marginTop: 20, marginBottom: 30, textAlign: 'center' },
-    textCadastro: { color: '#fff', fontSize: 14 },
-    linkCadastro: { color: '#EFB322', fontWeight: 'bold' }
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 30, backgroundColor: '#0C1D2C', padding: 20 },
+  form: { width: '90%', gap: 20 },
+  images: { alignItems: 'center', gap: 20, marginTop: 30 },
+  input: { height: 50, width: '100%', borderColor: '#ccc', borderWidth: 0, paddingHorizontal: 15, backgroundColor: '#fff', fontSize: 16 },
+  label: { fontSize: 18, color: '#FFF', marginBottom: 8 },
+  button: { alignItems: 'center', justifyContent: 'center', backgroundColor: "#0C1D2C", borderWidth: 1, borderColor: '#EFB322', padding: 8, width: '80%', alignSelf: 'center' },
+  buttonText: { color: '#fff', fontSize: 20 },
+  buttonPressed: { backgroundColor: '#EFB322' },
+  buttonTextPressed: { color: '#0C1D2C' },
+  viewLinha: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 30, width: '100%', alignSelf: 'center' },
+  linha: { height: 1, width: '56%', backgroundColor: '#fff' },
+  cadastroContainer: { marginTop: 20, marginBottom: 30, textAlign: 'center' },
+  textCadastro: { color: '#fff', fontSize: 14 },
+  linkCadastro: { color: '#EFB322', fontWeight: 'bold' }
 });

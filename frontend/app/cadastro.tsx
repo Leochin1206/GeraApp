@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Alert, Platform, Image } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import api, { AxiosError } from '../service/api';
 
@@ -16,6 +16,7 @@ export default function CadastroScreen() {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
+
     if (senha !== confirmarSenha) {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return;
@@ -24,15 +25,20 @@ export default function CadastroScreen() {
     const dadosUsuario = {
       nome: nome,
       email: email,
-      password: senha, 
+      password: senha,
     };
 
     try {
       await api.post('/users/', dadosUsuario);
 
-      Alert.alert('Sucesso!', 'Sua conta foi criada.', [
-        { text: 'OK', onPress: () => router.push('/') },
-      ]);
+      if (Platform.OS === 'web') {
+        alert('Sua conta foi criada com sucesso!');
+        router.push('/');
+      } else {
+        Alert.alert('Sucesso!', 'Sua conta foi criada.', [
+          { text: 'OK', onPress: () => router.push('/') },
+        ]);
+      }
 
     } catch (error) {
       if (error instanceof AxiosError && error.response) {
@@ -56,6 +62,13 @@ export default function CadastroScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.viewLinha}>
+        <View style={styles.linha}></View>
+        <View style={styles.linha}></View>
+      </View>
+
+      <Image source={require('../assets/images/logoNome.png')} style={styles.imageLogo}/>
+
       <View style={styles.form}>
         <View>
           <Text style={styles.label}>Nome</Text>
@@ -87,6 +100,11 @@ export default function CadastroScreen() {
           </Text>
         </Link>
       </View>
+
+      <View style={styles.viewLinha}>
+        <View style={styles.linha}></View>
+        <View style={styles.linha}></View>
+      </View>
     </View>
   );
 }
@@ -95,12 +113,15 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 15, backgroundColor: '#0C1D2C', padding: 20 },
   form: { width: '90%', gap: 15 },
   label: { fontSize: 18, color: '#FFF', marginBottom: 8 },
-  input: { height: 50, width: '100%', borderRadius: 8, paddingHorizontal: 15, backgroundColor: '#fff', fontSize: 16 },
+  input: { height: 50, width: '100%', borderColor: '#ccc', borderWidth: 0, paddingHorizontal: 15, backgroundColor: '#fff', fontSize: 16 },
   button: { alignItems: 'center', justifyContent: 'center', backgroundColor: "transparent", borderWidth: 2, borderColor: '#EFB322', paddingVertical: 12, width: '80%', alignSelf: 'center', borderRadius: 8, marginTop: 10 },
   buttonText: { color: '#EFB322', fontSize: 18, fontWeight: 'bold' },
   buttonPressed: { backgroundColor: '#EFB322' },
   buttonTextPressed: { color: '#0C1D2C' },
-  cadastroContainer: { marginTop: 15, width: '100%' },
+  cadastroContainer: { marginTop: 20, marginBottom: 20, width: '100%' },
   textCadastro: { color: '#fff', fontSize: 16, textAlign: 'center' },
   linkCadastro: { color: '#EFB322', fontWeight: 'bold' },
+  viewLinha: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 30, width: '100%', alignSelf: 'center' },
+  linha: { height: 1, width: '56%', backgroundColor: '#fff' },
+  imageLogo: { marginTop: 20 }
 });
