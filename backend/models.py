@@ -15,7 +15,7 @@ class Gerador(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, index=True)
-    foto = Column(Text)
+    descricao = Column(Text, nullable=True)
     eventos = relationship("Evento", back_populates="gerador")
 
 class Evento(Base):

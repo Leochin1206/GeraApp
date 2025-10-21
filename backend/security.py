@@ -1,4 +1,3 @@
-# security.py
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from jose import JWTError, jwt
@@ -9,7 +8,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "AdLvJPbPpJPc" 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)

@@ -1,22 +1,26 @@
-from pydantic import BaseModel, EmailStr 
+from pydantic import BaseModel, EmailStr
 from datetime import date
+from typing import Optional 
 
-# Schemas - Gerador 
+# Schemas - Gerador
 class GeradorBase(BaseModel):
     nome: str
-    foto: str | None = None
+    descricao: str | None = None 
 
 class GeradorCreate(GeradorBase):
     pass
 
-class Gerador(GeradorBase):
+class GeradorUpdate(BaseModel):
+    nome: Optional[str] = None
+    descricao: Optional[str] = None
+
+class Gerador(GeradorBase): 
     id: int
-    eventos: list['Evento'] = [] 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-# Schemas - Evento 
+# Schemas - Evento
 class EventoBase(BaseModel):
     local: str
     descricao: str
@@ -31,18 +35,17 @@ class EventoCreate(EventoBase):
 
 class Evento(EventoBase):
     id: int
-    gerador: Gerador 
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
-# Schemas - User 
+# Schemas - User
 class UserBase(BaseModel):
     nome: str
     email: EmailStr
 
 class UserCreate(UserBase):
-    password: str 
+    password: str
 
 class User(UserBase):
     id: int
@@ -50,7 +53,7 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
-
+# Schemas - Token (remain the same)
 class Token(BaseModel):
     access_token: str
     token_type: str
