@@ -33,9 +33,16 @@ class EventoBase(BaseModel):
 class EventoCreate(EventoBase):
     pass
 
-class Evento(EventoBase):
-    id: int
+class EventoUpdate(BaseModel):
+    local: Optional[str] = None
+    descricao: Optional[str] = None
+    data: Optional[date] = None
+    operador: Optional[str] = None
+    responsavel: Optional[str] = None
+    fone_resp: Optional[str] = None
+    id_gerador: Optional[int] = None
 
+class Evento(EventoBase):
     class Config:
         from_attributes = True
 

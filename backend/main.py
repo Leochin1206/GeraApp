@@ -1,4 +1,3 @@
-# Imports desnecessários (File, UploadFile, Form, Request, StaticFiles, shutil, os) foram removidos
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -13,7 +12,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Configuração do CORS (continua igual)
 origins = ["http://localhost:8081"]
 app.add_middleware(
     CORSMiddleware,
@@ -22,8 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# app.mount("/uploads", ...) <-- REMOVIDO (não precisamos mais servir fotos)
 
 def get_db():
     db = SessionLocal()
@@ -37,7 +33,6 @@ def get_db():
 def read_root():
     return {"message": "API de Eventos e Geradores está no ar!"}
 
-# --- Endpoints de Usuários e Login (continuam iguais) ---
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
@@ -68,17 +63,13 @@ def login_for_access_token(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-# --- Endpoints de Geradores (ATUALIZADOS) ---
+# ===================================== Geradores =====================================
 
-# 👇 ALTERADO: Recebe JSON (schemas.GeradorCreate) no corpo da requisição
 @app.post("/geradores/", response_model=schemas.Gerador)
 def create_gerador(gerador: schemas.GeradorCreate, db: Session = Depends(get_db)):
-    # Lógica de salvar foto e prints de debug foram removidos
     try:
-        # A função CRUD agora deve receber o schema diretamente (precisaremos ajustar o crud.py)
         return crud.create_gerador(db=db, gerador=gerador)
     except Exception as e:
-        # Tratamento de erro genérico
         print(f"!!! ERRO AO CHAMAR CRUD create_gerador: {e}")
         raise HTTPException(status_code=500, detail="Erro interno ao criar gerador.")
 
@@ -86,23 +77,19 @@ def create_gerador(gerador: schemas.GeradorCreate, db: Session = Depends(get_db)
 def read_geradores(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_geradores(db, skip=skip, limit=limit)
 
-# 👇 ALTERADO: Recebe JSON (um schema de atualização) no corpo da requisição
 @app.put("/geradores/{gerador_id}", response_model=schemas.Gerador)
 def update_existing_gerador(
     gerador_id: int,
-    gerador_update: schemas.GeradorUpdate, # <-- Usaremos um novo schema para atualização
+    gerador_update: schemas.GeradorUpdate,
     db: Session = Depends(get_db)
 ):
     db_gerador = crud.get_gerador(db, gerador_id)
     if db_gerador is None:
         raise HTTPException(status_code=404, detail="Gerador não encontrado")
 
-    # Lógica de salvar foto foi removida
     try:
-        # A função CRUD agora deve receber o schema de atualização (precisaremos ajustar o crud.py)
         return crud.update_gerador(db=db, gerador_id=gerador_id, gerador_update=gerador_update)
     except Exception as e:
-        # Tratamento de erro genérico
         print(f"!!! ERRO AO CHAMAR CRUD update_gerador: {e}")
         raise HTTPException(status_code=500, detail="Erro interno ao atualizar gerador.")
 
@@ -112,16 +99,47 @@ def delete_existing_gerador(gerador_id: int, db: Session = Depends(get_db)):
     deleted = crud.delete_gerador(db, gerador_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Gerador não encontrado")
-    return {"ok": True} # Ou return Response(status_code=204)
+    return {"ok": True} 
 
-# --- Endpoints de Eventos (continuam iguais por enquanto) ---
+# ===================================== Eventos =====================================
+
 @app.post("/eventos/", response_model=schemas.Evento)
 def create_evento(evento: schemas.EventoCreate, db: Session = Depends(get_db)):
     db_gerador = crud.get_gerador(db, gerador_id=evento.id_gerador)
     if db_gerador is None:
         raise HTTPException(status_code=404, detail="Gerador não encontrado")
-    return crud.create_evento(db=db, evento=evento)
+    
+    created_evento = crud.create_evento(db=db, evento=evento)
+    if created_evento is None: 
+         raise HTTPException(status_code=400, detail="Não foi possível criar o evento (verifique o gerador_id).")
+    return created_evento
 
 @app.get("/eventos/", response_model=List[schemas.Evento])
 def read_eventos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_eventos(db, skip=skip, limit=limit)
+
+@app.put("/eventos/{evento_id}", response_model=schemas.Evento)
+def update_existing_evento(
+    evento_id: int,
+    evento_update: schemas.EventoUpdate,
+    db: Session = Depends(get_db)
+):
+    db_evento = crud.get_evento(db, evento_id)
+    if db_evento is None:
+        raise HTTPException(status_code=404, detail="Evento não encontrado")
+
+    try:
+        updated_evento = crud.update_evento(db=db, evento_id=evento_id, evento_update=evento_update)
+        if updated_evento is None:
+             raise HTTPException(status_code=400, detail="Não foi possível atualizar o evento (verifique o gerador_id).")
+        return updated_evento
+    except Exception as e:
+        print(f"!!! ERRO AO CHAMAR CRUD update_evento: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno ao atualizar evento.")
+
+@app.delete("/eventos/{evento_id}", status_code=204)
+def delete_existing_evento(evento_id: int, db: Session = Depends(get_db)):
+    deleted = crud.delete_evento(db, evento_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Evento não encontrado")
+    return {"ok": True}

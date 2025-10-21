@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, Alert, RefreshControl, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
-import api, { AxiosError } from '../../service/api'; 
-import GeradorItem from '../../components/geradorItem'; 
-import AddGeradorModal from '../../components/addGeradorModal'; 
-import EditGeradorModal from '../../components/editGeradorModal'; 
+import api, { AxiosError } from '../../service/api';
+import GeradorItem from '../../components/geradorItem';
+import AddGeradorModal from '../../components/addGeradorModal';
+import EditGeradorModal from '../../components/editGeradorModal';
 
 interface Gerador {
   id: number;
   nome: string;
-  descricao: string | null; 
+  descricao: string | null;
 }
 
 export default function GeradoresScreen() {
@@ -53,18 +53,18 @@ export default function GeradoresScreen() {
     };
 
     try {
-      await api.post('/geradores/', dadosGerador); 
+      await api.post('/geradores/', dadosGerador);
       setAddModalVisible(false);
       Alert.alert('Sucesso', 'Gerador adicionado!');
-      fetchGeradores(); 
+      fetchGeradores();
     } catch (error) {
       console.error("Erro ao adicionar gerador:", error);
       if (error instanceof AxiosError && error.response) {
-         Alert.alert('Erro', error.response.data.detail || 'Não foi possível adicionar o gerador.');
+        Alert.alert('Erro', error.response.data.detail || 'Não foi possível adicionar o gerador.');
       } else {
         Alert.alert('Erro', 'Não foi possível adicionar o gerador.');
       }
-      throw error; 
+      throw error;
     }
   };
 
@@ -75,35 +75,43 @@ export default function GeradoresScreen() {
     };
 
     try {
-      await api.put(`/geradores/${id}`, dadosGeradorUpdate); 
+      await api.put(`/geradores/${id}`, dadosGeradorUpdate);
       setEditModalVisible(false);
       Alert.alert('Sucesso', 'Gerador atualizado!');
-      fetchGeradores(); 
+      fetchGeradores();
     } catch (error) {
       console.error("Erro ao atualizar gerador:", error);
       if (error instanceof AxiosError && error.response) {
-         Alert.alert('Erro', error.response.data.detail || 'Não foi possível atualizar o gerador.');
+        Alert.alert('Erro', error.response.data.detail || 'Não foi possível atualizar o gerador.');
       } else {
         Alert.alert('Erro', 'Não foi possível atualizar o gerador.');
       }
-      throw error; 
+      throw error;
     }
   };
 
   const handleDeleteGerador = async (id: number) => {
+    console.log("handleDeleteGerador called in screen with ID:", id);
     try {
+      console.log("Sending DELETE request to API...");
       await api.delete(`/geradores/${id}`);
+      console.log("DELETE request successful.");
       setEditModalVisible(false);
-      Alert.alert('Sucesso', 'Gerador deletado!');
+
+      if (Platform.OS !== 'web') {
+        Alert.alert('Sucesso', 'Gerador deletado!');
+      }
+
+      console.log("Calling fetchGeradores to refresh list...");
       fetchGeradores();
+
     } catch (error) {
-      console.error("Erro ao deletar gerador:", error);
-       if (error instanceof AxiosError && error.response) {
-         Alert.alert('Erro', error.response.data.detail || 'Não foi possível deletar o gerador.');
+      console.error("Erro ao deletar gerador (API Call Failed):", error);
+      if (error instanceof AxiosError && error.response) {
+        Alert.alert('Erro', error.response.data.detail || 'Não foi possível deletar o gerador.');
       } else {
         Alert.alert('Erro', 'Não foi possível deletar o gerador.');
       }
-      throw error; 
     }
   };
 
@@ -122,7 +130,7 @@ export default function GeradoresScreen() {
       </View>
 
       {loading && geradores.length === 0 ? (
-        <ActivityIndicator size="large" color="#EFB322" style={styles.loader}/>
+        <ActivityIndicator size="large" color="#EFB322" style={styles.loader} />
       ) : (
         <FlatList
           data={geradores}
@@ -155,20 +163,33 @@ export default function GeradoresScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0C1D2C', 
-    paddingTop: 10,
+    backgroundColor: '#fcfcfc', 
+    paddingTop: 20, 
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 15,
+    paddingVertical: 12,    
+    paddingHorizontal: 20, 
+    marginHorizontal: '7.5%', 
+    marginBottom: 20,       
+    backgroundColor: "#FFFFFF", 
+    borderRadius: 10,         
+    width: "85%",            
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 3.84,
+    elevation: 4,
   },
   counterText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFF', 
+    fontSize: 16, 
+    fontWeight: '600', 
+    color: '#333',     
   },
   addButton: {
     padding: 5,
@@ -183,7 +204,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    color: '#A0AEC0', 
+    color: '#A0AEC0',
     textAlign: 'center',
     marginTop: 50,
     fontSize: 16,

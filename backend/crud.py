@@ -60,15 +60,44 @@ def delete_gerador(db: Session, gerador_id: int):
 # --- End Gerador CRUD ---
 
 # CRUD - Evento
+def get_evento(db: Session, evento_id: int): 
+    return db.query(models.Evento).filter(models.Evento.id == evento_id).first()
+
 def get_eventos(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Evento).offset(skip).limit(limit).all()
 
 def create_evento(db: Session, evento: schemas.EventoCreate):
+    db_gerador = get_gerador(db, evento.id_gerador)
+    if not db_gerador:
+        return None 
     db_evento = models.Evento(**evento.model_dump())
     db.add(db_evento)
     db.commit()
     db.refresh(db_evento)
     return db_evento
+
+def update_evento(db: Session, evento_id: int, evento_update: schemas.EventoUpdate):
+    db_evento = get_evento(db, evento_id)
+    if db_evento:
+        if evento_update.id_gerador is not None:
+             db_gerador = get_gerador(db, evento_update.id_gerador)
+             if not db_gerador:
+                 return None 
+
+        update_data = evento_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_evento, key, value)
+        db.commit()
+        db.refresh(db_evento)
+    return db_evento
+
+def delete_evento(db: Session, evento_id: int):
+    db_evento = get_evento(db, evento_id)
+    if db_evento:
+        db.delete(db_evento)
+        db.commit()
+        return True
+    return False
 # --- End Evento CRUD ---
 
 # --- Authentication ---
