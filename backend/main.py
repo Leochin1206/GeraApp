@@ -45,6 +45,10 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
+@app.get("/users/me", response_model=schemas.User)
+async def read_users_me(current_user: models.User = Depends(security.get_current_user)):
+    return current_user
+
 @app.post("/login", response_model=schemas.Token)
 def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
