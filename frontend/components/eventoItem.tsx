@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: '#374151', marginVertical: 10 },
   secondaryInfo: { },
   label: { fontSize: 12, color: '#A0AEC0', marginBottom: 2, marginTop: 6 },
-  value: { fontSize: 14, color: '#E5E7EB', marginBottom: 4 },
+  value: { fontSize: 14, color: '#E5E7EB', marginBottom: 4, width: '87%', textAlign: 'left' },
   editButton: { position: 'absolute', top: 100, right: 10 },
   chevron: { position: 'absolute', right: 15, top: '50%', transform: [{ translateY: -14 }] }
 });

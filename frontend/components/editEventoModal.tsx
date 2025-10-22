@@ -42,7 +42,6 @@ const EditEventoModal: React.FC<EditEventoModalProps> = ({ visible, evento, onCl
 
   useEffect(() => {
     if (evento) {
-      console.log("[EditEventoModal] Received evento prop:", evento);
       setLocal(evento.local);
       setDescricao(evento.descricao);
       setData(evento.data || '');
