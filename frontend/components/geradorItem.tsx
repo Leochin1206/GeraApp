@@ -30,32 +30,11 @@ const GeradorItem: React.FC<GeradorItemProps> = ({ gerador, onEditPress }) => {
 };
 
 const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center', 
-    backgroundColor: '#1f2937',
-    padding: 15,
-    marginVertical: 8,
-    borderRadius: 8,
-  },
-  textContainer: {
-    flex: 1, 
-    marginRight: 10, 
-  },
-  nome: {
-    fontSize: 18,
-    color: '#FFF',
-    fontWeight: 'bold',
-    marginBottom: 4, 
-  },
-  descricao: {
-    fontSize: 14,
-    color: '#D1D5DB', 
-  },
-  editButton: {
-    padding: 5,
-    marginLeft: 'auto', 
-  },
+  itemContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1f2937',padding: 15, marginVertical: 8, borderRadius: 8 },
+  textContainer: { flex: 1, marginRight: 10 },
+  nome: { fontSize: 18, color: '#FFF', fontWeight: 'bold', marginBottom: 4 },
+  descricao: { fontSize: 14, color: '#D1D5DB' },
+  editButton: { padding: 5, marginLeft: 'auto' }
 });
 
 export default GeradorItem;

@@ -43,6 +43,8 @@ class EventoUpdate(BaseModel):
     id_gerador: Optional[int] = None
 
 class Evento(EventoBase):
+    id: int  
+
     class Config:
         from_attributes = True
 

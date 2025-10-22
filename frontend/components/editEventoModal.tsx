@@ -5,7 +5,7 @@ interface Evento {
   id: number;
   local: string;
   descricao: string;
-  data: string; 
+  data: string;
   operador: string;
   responsavel: string;
   fone_resp: string | null;
@@ -37,32 +37,28 @@ const EditEventoModal: React.FC<EditEventoModalProps> = ({ visible, evento, onCl
   const [operador, setOperador] = useState('');
   const [responsavel, setResponsavel] = useState('');
   const [foneResp, setFoneResp] = useState('');
-  const [idGerador, setIdGerador] = useState(''); 
-
+  const [idGerador, setIdGerador] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (evento) {
+      console.log("[EditEventoModal] Received evento prop:", evento);
       setLocal(evento.local);
       setDescricao(evento.descricao);
       setData(evento.data || '');
       setOperador(evento.operador);
       setResponsavel(evento.responsavel);
       setFoneResp(evento.fone_resp || '');
-      setIdGerador(evento.id_gerador?.toString() || ''); 
-    } else {
-      setLocal('');
-      setDescricao('');
-      setData('');
-      setOperador('');
-      setResponsavel('');
-      setFoneResp('');
-      setIdGerador('');
+      setIdGerador(evento.id_gerador?.toString() || '');
     }
   }, [evento]);
 
   const handleSalvar = async () => {
-    if (!evento) return; 
+    if (!evento?.id) {
+      console.error("[EditEventoModal] handleSalvar: evento.id ausente.");
+      Alert.alert('Erro', 'Evento inválido ou ainda não carregado.');
+      return;
+    }
 
     if (!local.trim() || !descricao.trim() || !data.trim() || !operador.trim() || !responsavel.trim() || !idGerador.trim()) {
       Alert.alert('Erro', 'Preencha todos os campos obrigatórios.');
@@ -71,8 +67,8 @@ const EditEventoModal: React.FC<EditEventoModalProps> = ({ visible, evento, onCl
 
     const idGeradorNum = parseInt(idGerador, 10);
     if (isNaN(idGeradorNum)) {
-       Alert.alert('Erro', 'ID do Gerador inválido.');
-       return;
+      Alert.alert('Erro', 'ID do Gerador inválido.');
+      return;
     }
 
     setLoading(true);
@@ -86,8 +82,11 @@ const EditEventoModal: React.FC<EditEventoModalProps> = ({ visible, evento, onCl
         fone_resp: foneResp.trim() || null,
         id_gerador: idGeradorNum,
       };
+
+      console.log("[EditEventoModal] handleSalvar - Calling onUpdate with ID:", evento.id);
       await onUpdate(evento.id, updateData);
     } catch (error) {
+      console.error("[EditEventoModal] Error during onUpdate call:", error);
     } finally {
       setLoading(false);
     }
@@ -95,7 +94,7 @@ const EditEventoModal: React.FC<EditEventoModalProps> = ({ visible, evento, onCl
 
   const handleDeleteConfirm = () => {
     if (!evento) return;
-    const eventDescription = evento.local || `Evento ID ${evento.id}`; 
+    const eventDescription = evento.local || `Evento ID ${evento.id}`;
 
     if (Platform.OS === 'web') {
       if (window.confirm(`Tem certeza que deseja deletar o evento em "${eventDescription}"?`)) {
@@ -118,19 +117,14 @@ const EditEventoModal: React.FC<EditEventoModalProps> = ({ visible, evento, onCl
     setLoading(true);
     try {
       await onDelete(evento.id);
-    } catch (error) {
+    } catch {
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose} 
-    >
+    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -152,6 +146,7 @@ const EditEventoModal: React.FC<EditEventoModalProps> = ({ visible, evento, onCl
                 <Text style={styles.buttonText}>{loading ? 'Salvando...' : 'Salvar'}</Text>
               </Pressable>
             </View>
+
             <Pressable style={[styles.button, styles.cancelButton, { marginTop: 10 }]} onPress={onClose} disabled={loading}>
               <Text style={styles.buttonText}>Cancelar</Text>
             </Pressable>
@@ -167,20 +162,8 @@ const styles = StyleSheet.create({
   modalView: { width: '90%', maxHeight: '85%', backgroundColor: '#1f2937', borderRadius: 10, paddingVertical: 20, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 },
   scrollViewContent: { width: '100%', paddingHorizontal: 20, alignItems: 'center' },
   modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#FFF', marginBottom: 20 },
-  input: {
-    height: 50,
-    width: '100%',
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    marginBottom: 15,
-    textAlignVertical: 'top',
-  },
-  textArea: {
-    height: 80,
-    paddingTop: 15,
-  },
+  input: { height: 50, width: 260, backgroundColor: '#FFF', borderRadius: 8,paddingHorizontal: 15, fontSize: 16, marginBottom: 15, textAlignVertical: 'top' },
+  textArea: { height: 80, paddingTop: 15 },
   buttonContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginTop: 10 },
   button: { borderRadius: 8, paddingVertical: 12, paddingHorizontal: 20, elevation: 2, flex: 0.48 },
   cancelButton: { backgroundColor: '#4b5563', flex: 1 },

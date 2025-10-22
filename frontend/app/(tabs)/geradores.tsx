@@ -161,52 +161,11 @@ export default function GeradoresScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fcfcfc', 
-    paddingTop: 20, 
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,    
-    paddingHorizontal: 20, 
-    marginHorizontal: '7.5%', 
-    marginBottom: 20,       
-    backgroundColor: "#FFFFFF", 
-    borderRadius: 10,         
-    width: "85%",            
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 3.84,
-    elevation: 4,
-  },
-  counterText: {
-    fontSize: 16, 
-    fontWeight: '600', 
-    color: '#333',     
-  },
-  addButton: {
-    padding: 5,
-  },
-  list: {
-    flex: 1,
-    paddingHorizontal: 15,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    color: '#A0AEC0',
-    textAlign: 'center',
-    marginTop: 50,
-    fontSize: 16,
-  },
+  container: { flex: 1, backgroundColor: '#fcfcfc', paddingTop: 20,  },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 20, marginHorizontal: '7.5%', marginBottom: 20, backgroundColor: "#FFFFFF", borderRadius: 10, width: "85%", shadowColor: "#000",shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 3.84,elevation: 4 },
+  counterText: { fontSize: 16, fontWeight: '600', color: '#333' },
+  addButton: { padding: 5 },
+  list: { flex: 1, paddingHorizontal: 15 },
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { color: '#A0AEC0', textAlign: 'center', marginTop: 50, fontSize: 16 }
 });

@@ -51,21 +51,8 @@ const Navbar = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: 65,
-    backgroundColor: COLORS.background,
-    borderTopWidth: 1,
-    borderTopColor: '#2a3b4c',
-    paddingBottom: Platform.OS === 'ios' ? 10 : 0,
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  container: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',height: 65, backgroundColor: COLORS.background, borderTopWidth: 1, borderTopColor: '#2a3b4c', paddingBottom: Platform.OS === 'ios' ? 10 : 0 },
+  navItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });
 
 export default Navbar;

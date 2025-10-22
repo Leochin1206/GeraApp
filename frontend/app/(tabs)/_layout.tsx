@@ -13,7 +13,5 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1, },
 });
